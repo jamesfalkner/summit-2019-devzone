@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prices</title>
+
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/patternfly/3.24.0/css/patternfly.min.css">
+    <link rel="stylesheet" type="text/css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/patternfly/3.24.0/css/patternfly-additions.min.css">
+
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/modules/exporting.js"></script>
+        
+</head>
+<body>
+
+    <h2>Quarkus Kafka Prices</h2>
+    <div class="row">
+        <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    </div>
+
+</body>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    var source = new EventSource("/prices/stream");
+    var chart;
+    var pts = 0;
+    source.onmessage = function (event) {
+        var shift = chart.series[0].data.length > 20;
+        var now = new Date().getTime();
+        chart.series[0].addPoint([now, Number(event.data)], true, shift);
+        console.log([now, Number(event.data)]);
+        pts++;
+    };
+
+    function adjustGradient() {
+        document.getElementsByTagName('linearGradient')[0].setAttributeNS(null, 'y2', this.plotHeight);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+        chart = Highcharts.chart('container', {
+        chart: {
+            animation: Highcharts.svg, // don't animate in old IE
+            type: 'spline',
+            zoomType: 'x',
+            events: {
+                load: adjustGradient,
+                redraw: adjustGradient
+            }
+        },
+        time: {
+            useUTC: false
+        },
+        title: {
+            text: 'Price over time'
+        },
+        subtitle: {
+            text: document.ontouchstart === undefined ?
+            'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in'
+        },
+        xAxis: {
+            type: 'datetime'
+        },
+        yAxis: {
+            minValue: 0,
+            title: {
+            text: 'Price (€)'
+            }
+        },
+        legend: {
+            enabled: false
+        },
+        plotOptions: {
+            series: {
+                fillColor: {
+                    linearGradient: [0,0,0,100.0],
+                    stops: [
+                    [0, Highcharts.getOptions().colors[0]],
+                    [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                    ]
+                },
+                lineWidth: 1,
+                states: {
+                    hover: {
+                    lineWidth: 1
+                    }
+                }
+            }
+        },
+
+        series: [{
+            type: 'areaspline',
+            name: 'EUR Price',
+            data: []
+        }]
+        });
+    });
+
+</script>
+</html>

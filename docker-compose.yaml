@@ -1,0 +1,30 @@
+version: '2'
+
+services:
+
+  zookeeper:
+    image: wurstmeister/zookeeper:3.4.6
+    expose:
+    - "2181"
+    ports:
+    - "2181:2181"
+    - "9998:9998"
+
+    environment:
+      JMX_PORT: 9998
+
+  kafka:
+    image: wurstmeister/kafka:2.12-2.1.1
+    depends_on:
+    - zookeeper
+    ports:
+    - "9092:9092"
+    - "9999:9999"
+
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      JMX_PORT: 9999
+      KAFKA_JMX_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=127.0.0.1 -Dcom.sun.management.jmxremote.rmi.port=9999"
+
