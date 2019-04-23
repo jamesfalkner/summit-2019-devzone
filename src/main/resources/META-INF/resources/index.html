@@ -26,8 +26,9 @@
     var source = new EventSource("/prices/stream");
     var chart;
     var pts = 0;
+    var PREFILL_COUNT = 50;
     source.onmessage = function (event) {
-        var shift = chart.series[0].data.length > 20;
+        var shift = chart.series[0].data.length > PREFILL_COUNT;
         var now = new Date().getTime();
         chart.series[0].addPoint([now, Number(event.data)], true, shift);
         console.log([now, Number(event.data)]);
@@ -93,7 +94,20 @@
         series: [{
             type: 'areaspline',
             name: 'EUR Price',
-            data: []
+            data: (function () {
+            // generate an array of random data
+            var data = [],
+                time = (new Date()).getTime(),
+                i;
+
+            for (i = 0-PREFILL_COUNT; i < 0; i++) {
+                data.push({
+                    x: time + i * 1000,
+                    y: Math.random() * 100
+                });
+            }
+            return data;
+        }())
         }]
         });
     });
