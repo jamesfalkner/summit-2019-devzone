@@ -25,10 +25,10 @@ public class PriceResource {
     }
 
 
-    @GET
-    @Path("/stream")
-    @Produces(MediaType.SERVER_SENT_EVENTS)
-    public Publisher<Double> stream() {
-        return prices;
-    }
+    // @GET
+    // @Path("/stream")
+    // @Produces(MediaType.SERVER_SENT_EVENTS)
+    // public Publisher<Double> stream() {
+    //     return prices;
+    // }
 }
