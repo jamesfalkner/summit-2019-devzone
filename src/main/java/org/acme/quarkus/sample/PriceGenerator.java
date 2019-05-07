@@ -1,6 +1,7 @@
 package org.acme.quarkus.sample;
 
 import io.reactivex.Flowable;
+
 import org.eclipse.microprofile.reactive.messaging.Outgoing;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -16,7 +17,7 @@ public class PriceGenerator {
 
     private Random random = new Random();
 
-    @Outgoing("topic-price")
+   @Outgoing("topic-price")
     public Flowable<Integer> generate() {
         return Flowable.interval(1000, TimeUnit.MILLISECONDS)
                 .map(tick -> random.nextInt(100));
