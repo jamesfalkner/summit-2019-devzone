@@ -1,0 +1,25 @@
+= Reactive Streams with Quarkus and Kafka
+
+This demo, uses the Quarkus Kafka extension to build a https://quarkus.io[Quarkus] streaming application using https://github.com/eclipse/microprofile-reactive-messaging[MicroProfile Reative Streams Messaging] and https://kafka.apache.org[Apache Kafka,window=_blank], a distributed streaming platform.
+
+You will also use https://strimzi.io/[Strimzi,window=_blank], which provides an easy way to run an Apache Kafka cluster on Kubernetes using https://operatorhub.io/what-is-an-operator[Operators,window=_blank].
+
+image::docs/kafkaarch.png[createkafka]
+
+= Prereqs
+
+* Kubernetes cluster (e.g. https://try.openshift.com[Red Hat OpenShift])
+* https://operatorhub.io/operator/strimzi-kafka-operator[Strimzi Operator] installed
+    * A _topic_ named `names` on the Kafka cluster
+
+= Steps
+
+1. Modify `src/main/resources/application.properties` to specify the hostname/port of your Kafka cluster in the two `bootstrap.servers` lines:
+
+[source, none]
+----
+%prod.mp.messaging.outgoing.generated-name.bootstrap.servers=names-cluster-kafka-bootstrap:9092
+%prod.mp.messaging.incoming.names.bootstrap.servers=names-cluster-kafka-bootstrap:9092
+----
+
+2. Run using `mvn clean compile quarkus:dev`
